@@ -77,6 +77,8 @@ class MonteCarloWithExploringStarts:
             G = 1 if result == "win" else -1
             for state, action in episode:
                 self.returns[(state, action)].append(G)
+                # the expected value of a state-action pair can be approximated by the average of the returns 
+                # that have been observed after taking that action from that state, across many episodes.
                 self.Q[state][action] = sum(self.returns[(state, action)]) / len(self.returns[(state, action)])
                 # Update policy to the action that maximizes the Q value
                 self.policy[state] = max(self.Q[state], key=self.Q[state].get)
