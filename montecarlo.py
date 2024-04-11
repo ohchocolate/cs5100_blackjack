@@ -2,16 +2,29 @@ import random
 from collections import defaultdict
 from blackjack import BlackjackGame
 
-
 class MonteCarloWithExploringStarts:
     def __init__(self):
-        # 初始化状态-动作值函数和返回值列表
+        """
+        Initializes the Monte Carlo agent with exploring starts.
+        This includes initializing the state-action value function (Q),
+        a list of returns for each state-action pair, and a policy.
+        """
+        # Initialize state-action value function and returns list
         self.Q = defaultdict(lambda: defaultdict(float))
         self.returns = defaultdict(list)
-        # 策略初始化为None，将在训练中更新
+        # Policy initialized to None, to be updated during training
         self.policy = defaultdict(lambda: None)
 
     def generate_episode(self, game):
+        """
+        Generates an episode using the current policy.
+
+        Parameters:
+            game (BlackjackGame): An instance of the BlackjackGame class.
+
+        Returns:
+            A tuple containing the episode (as a list of state-action pairs) and the game result.
+        """
         episode = []
         game.start_game()
         state = (game.hand_value(game.player_hand), game.dealer_hand[0]['number'], 'A' in [card['number'] for card in game.player_hand])
@@ -30,7 +43,15 @@ class MonteCarloWithExploringStarts:
 
     @staticmethod
     def has_usable_ace(hand):
-        """Check if the hand has a usable ace."""
+        """
+        Checks if the hand has a usable ace (an ace counted as 11 without busting).
+
+        Parameters:
+            hand (list): The player's hand (list of cards).
+
+        Returns:
+            True if there's a usable ace, False otherwise.
+        """
         value, ace = 0, False
         for card in hand:
             card_number = card['number']
@@ -39,26 +60,41 @@ class MonteCarloWithExploringStarts:
         return int(ace and value + 10 <= 21)
 
     def train(self, episodes):
+        """
+        Trains the agent over a specified number of episodes.
+
+        Parameters:
+            episodes (int): The number of episodes to train the agent.
+        """
         one_percent = round(episodes / 100)
         for ep in range(episodes):
             game = BlackjackGame()
             game.start_game()
             if ep % one_percent == 0:
-                progress = (ep/episodes) * 100
+                progress = (ep / episodes) * 100
                 print(f"Training progress: {progress:.2f}%")
             episode, result = self.generate_episode(game)
             G = 1 if result == "win" else -1
             for state, action in episode:
                 self.returns[(state, action)].append(G)
                 self.Q[state][action] = sum(self.returns[(state, action)]) / len(self.returns[(state, action)])
-                # 策略更新为使Q值最大化的动作
+                # Update policy to the action that maximizes the Q value
                 self.policy[state] = max(self.Q[state], key=self.Q[state].get)
 
     def print_policy(self):
+        """
+        Prints the current policy.
+        """
         for state, action in self.policy.items():
             print(f"State: {state}, Action: {action}")
 
     def play(self):
+        """
+        Plays a game of blackjack using the trained policy.
+
+        Returns:
+            The final result of the game.
+        """
         game = BlackjackGame()
         game.start_game()
 
@@ -77,11 +113,10 @@ class MonteCarloWithExploringStarts:
             else:
                 dealer_card = int(dealer_card)
 
-            # 获取当前状态的动作价值
+            # Retrieve the action value for the current state
             hit_value = self.Q.get((player_sum, dealer_card, int(usable_ace), 0), 0.0)
             stay_value = self.Q.get((player_sum, dealer_card, int(usable_ace), 1), 0.0)
 
-            # 选择价值更高的动作
             action = "hit" if hit_value > stay_value else "stay"
             status = game.player_action(action)
 
@@ -97,4 +132,3 @@ class MonteCarloWithExploringStarts:
         final_result = game.game_result()
         print(f"Game result: {final_result}")
         return final_result
-
