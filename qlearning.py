@@ -85,12 +85,6 @@ class BlackjackQLearning:
         return int(ace and value + 10 <= 21)
 
     def train(self, episodes):
-        """
-        Trains the Q-Learning agent on a specified number of Blackjack games.
-        
-        Parameters:
-            episodes (int): The number of games to play for training.
-        """
         one_percent = round(episodes / 100)
 
         for ep in range(episodes):
@@ -103,7 +97,12 @@ class BlackjackQLearning:
 
             # Main training loop
             # Convert dealer card to numerical value
-            dealer_card = int(game.dealer_hand[0]['number']) if game.dealer_hand[0]['number'] not in ['J', 'Q', 'K', 'A'] else (10 if game.dealer_hand[0]['number'] != 'A' else 11)
+            if game.dealer_hand[0]['number'] not in ['J', 'Q', 'K', 'A']:
+                dealer_card = int(game.dealer_hand[0]['number'])  
+            elif game.dealer_hand[0]['number'] != 'A':
+                dealer_card = 10  
+            else:
+                dealer_card = 11
             status = "continue"
 
             while status == "continue":
@@ -166,4 +165,5 @@ class BlackjackQLearning:
             game.dealer_action(output=True)
 
         final_result = game.game_result()
+        print(f"Game result: {final_result}")
         return final_result
