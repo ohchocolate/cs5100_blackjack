@@ -1,69 +1,34 @@
-# AI Blackjack w/ Q-learning and Monte Carlo
-
-![blackjack](https://images.ctfassets.net/93v9a59si7ol/2aHiswcjTt7sXcWtJ7JzAZ/c8759819f9bc7aabac9c6b86bc95ce66/top-view-of-blackjack-table.png?w=1160&h=640&fit=thumb)
-
-This project implements a Q-learning-based reinforcement learning solution to play the popular casino card game, Blackjack. The implementation consists of two main components: `BlackjackQLearning`, representing the Q-learning agent, and `BlackjackGame`, modeling the game of Blackjack.
-
-## Introduction
-
-The Q-learning agent (`BlackjackQLearning`) employs Q-tables to learn an optimal strategy for playing Blackjack. It uses an ε-greedy strategy for action selection during training and updates the Q-table based on rewards obtained during gameplay. The Blackjack game (`BlackjackGame`) simulates the actions of the player and dealer, allowing the Q-learning agent to learn and improve its strategy through interactions.
+# Blackjack Reinforcement Learning
+This project applies Reinforcement Learning (RL) techniques, specifically Monte Carlo methods and Q-Learning, to develop agents capable of playing Blackjack. These agents are trained and evaluated against a simulated Blackjack environment to learn optimal strategies.
 
 ## Project Structure
+blackjack.py: Contains the BlackjackGame class that simulates a simple version of the Blackjack game environment. It includes methods for dealing cards, calculating hand values, and determining game outcomes.
 
-The project structure is as follows:
-- `qlearning.py`: Contains the Q-learning agent implementation.
-- `montecarlo.py`: Contains the Monte Carlo agent implementation.
-- `blackjack.py`: Contains the Blackjack game implementation.
-- `main.py`: Entry point for training the Q-learning agent and evaluating its performance.
-- `ABOUT_THE_CODE.md`: Markdown that explains the code.
+montecarlo.py: Implements the MonteCarloWithExploringStarts class, representing an agent that uses the Monte Carlo method with exploring starts for learning the game strategy.
 
-## How to Run
+qlearning.py: Defines the BlackjackQLearning class, which uses the Q-Learning algorithm to learn an optimal policy for playing Blackjack.
 
-To run the project and train the Q-learning agent, follow these steps:
+main.py: The main script used to train both the Monte Carlo and Q-Learning agents, evaluate their performance, and compare their win rates.
 
-1. Ensure you have Python installed on your machine.
+## Algorithms Introduction
+### Monte Carlo Method
+The Monte Carlo method for reinforcement learning uses experience from playing the game to estimate the value of state-action pairs. It involves playing episodes of the game, at the end of which rewards are observed and used to update the value estimates. One key aspect of this method is the use of exploring starts to ensure that all actions are explored sufficiently.
 
-2. Clone this repository:
-   ```bash
-   git clone https://github.com/yourusername/blackjack-q-learning.git
-   cd blackjack-q-learning
-   ```
+### Q-Learning
+Q-Learning is an off-policy temporal difference learning algorithm that seeks to find the best action to take given the current state. It directly learns the value of taking an action in a state, without requiring a model of the environment. The learning process updates estimates of the Q-values based on the equation Q(s,a) = Q(s,a) + α(R + γ maxQ(s',a') - Q(s,a)), where R is the reward received, s' is the next state, and a' is the next action.
 
-3. Run the training script:
-   ```bash
-   python main.py
-   ```
+## Training Methods
+Both agents were trained over 500,000 episodes of Blackjack, with their policies updated based on the outcomes and rewards of each episode. The Monte Carlo agent used exploring starts to ensure every state-action pair is explored. The Q-Learning agent used an epsilon-greedy policy for exploration, with epsilon set to 0.1.
 
-4. The agent will be trained for a specified number of episodes, and test games will be played to evaluate its performance.
+Monte Carlo Training: Episodes were generated using the policy derived from the Q-values, with the policy updated after each episode to reflect the learned values.
 
-***Note:*** You can refer to [ABOUT_THE_CODE](ABOUT_THE_CODE.md) for a line-by-line breakdown.
+Q-Learning Training: The agent chose actions either randomly (with probability ε) or by following the current best estimate of the Q-table. After each action, the Q-table was updated based on the received reward and the maximum future value estimate.
 
-## Configuration and Parameters
+Results
+After training, both agents were evaluated over 100,000 games of Blackjack. The performance metrics considered were the win rates of the agents.
 
-You can modify the training parameters and other configurations by editing the constants and variables in `main.py` and the relevant parts of `qlearning.py`.
+Monte Carlo Agent: Showed a win rate of approximately XX%, with draws and losses accounting for the remaining outcomes.
 
-- `alpha`: Learning rate for the Q-learning algorithm.
-- `gamma`: Discount factor for future rewards.
-- `epsilon`: Exploration probability for the ε-greedy strategy.
-- `episodes`: Number of training episodes for the Q-learning agent.
-- `test_games`: Number of test games to evaluate the agent's performance.
+Q-Learning Agent: Achieved a win rate of approximately YY%, demonstrating the effectiveness of Q-Learning in optimizing the decision-making process.
 
-## Results
-
-After training and testing, the project will display the win rate of the Q-learning agent in playing Blackjack.
-
-## Contributing
-
-Feel free to contribute to this project by opening issues or creating pull requests. Contributions are welcome and encouraged!
-
-## Contact
-
-If you have any questions or suggestions related to this project, you can reach out to me at:
-
-- GitHub: [arindal1](https://github.com/arindal1)
-- LinkedIn: [arindalchar](https://www.linkedin.com/arindalchar/)
-- Twitter: [arindal_17](https://twitter.com/arindal_17)
-
----
-
-## Keep creating 🚀
+These results indicate the potential of reinforcement learning techniques in mastering complex strategies required for games like Blackjack. Future work could involve tuning the parameters further or exploring more sophisticated RL algorithms.
